@@ -1,0 +1,41 @@
+#!/bin/bash
+
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+
+POL_SetupWindow_Init
+POL_Debug_Init 
+ 
+POL_SetupWindow_presentation "Sketchup 2016" "maroc81"
+
+POL_Wine_SelectPrefix "Sketchup2016"
+POL_Wine_PrefixCreate "2.3"
+
+POL_System_TmpCreate "Sketchup2016"
+
+POL_SetupWindow_InstallMethod "LOCAL,DOWNLOAD"
+
+if [ "$INSTALL_METHOD" = "LOCAL" ]
+then
+    POL_SetupWindow_browse "Please select the installation file to run." "Sketchup 2016 Installation"
+    POL_SetupWindow_wait "Installation in progress" "Sketchup 2016 Installation"
+    POL_Wine "$APP_ANSWER"
+    POL_Wine_WaitExit "$TITLE"
+elif [ "$INSTALL_METHOD" = "DOWNLOAD" ]
+then
+    cd "$POL_System_TmpDir"
+    POL_Download "http://dl.trimble.com/sketchup/2016/en/SketchUpPro-2016-1-1450-80430-en-x86.exe"
+    POL_SetupWindow_wait "Installation in progress" "Google Sketchup 2016 Installation"
+    POL_Wine start /unix "$POL_System_TmpDir/SketchUpPro-2016-1-1450-80430-en-x86.exe"
+    POL_Wine_WaitExit "$TITLE"
+fi
+POL_System_TmpDelete
+
+POL_Call POL_Install_dotnet40
+
+POL_Shortcut "SketchUp.exe" "Sketchup 2016"
+
+Set_OS "win7"
+ 
+POL_SetupWindow_Close
+exit
