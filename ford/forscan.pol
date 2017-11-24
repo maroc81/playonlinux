@@ -1,0 +1,39 @@
+#!/bin/bash
+
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+
+POL_SetupWindow_Init
+POL_Debug_Init
+
+POL_SetupWindow_presentation "FORScan" "maroc81"
+
+POL_Wine_SelectPrefix "FORScan"
+POL_Wine_PrefixCreate "2.3"
+
+POL_System_TmpCreate "FORScan"
+
+POL_SetupWindow_InstallMethod "LOCAL,DOWNLOAD"
+
+if [ "$INSTALL_METHOD" = "LOCAL" ]
+then
+    POL_SetupWindow_browse "Please select the installation file to run." "FORScan Installation"
+    POL_SetupWindow_wait "Installation in progress" "FORScan Installation"
+    POL_Wine "$APP_ANSWER"
+    POL_Wine_WaitExit "$TITLE"
+elif [ "$INSTALL_METHOD" = "DOWNLOAD" ]
+then
+    cd "$POL_System_TmpDir"
+    POL_Download "http://www.forscan.org/download/FORScanSetupWine2.3.12.beta.exe"
+    POL_SetupWindow_wait "Installation in progress" "FORScan Installation"
+    POL_Wine start /unix "$POL_System_TmpDir/FORScanSetupWine2.3.12.beta.exe"
+    POL_Wine_WaitExit "$TITLE"
+fi
+POL_System_TmpDelete
+
+POL_Shortcut "FORScan.exe" "Forscan"
+
+Set_OS "win7"
+
+POL_SetupWindow_Close
+exit
